@@ -1,0 +1,162 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  name: argocd
+  namespace: vault
+spec:
+  configManagementPlugins: |
+    - name: argocd-vault-plugin
+      generate:
+        command: ["argocd-vault-plugin"]
+        args: ["generate", "./"]
+  server:
+    autoscale:
+      enabled: false
+    grpc:
+      ingress:
+        enabled: false
+    ingress:
+      enabled: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 125m
+        memory: 128Mi
+    route:
+      enabled: true
+    service:
+      type: ''
+  grafana:
+    enabled: false
+    ingress:
+      enabled: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+    route:
+      enabled: false
+  prometheus:
+    enabled: false
+    ingress:
+      enabled: false
+    route:
+      enabled: false
+  initialSSHKnownHosts: {}
+  applicationSet:
+    resources:
+      limits:
+        cpu: '2'
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+  rbac:
+    policy: |
+      g, system:cluster-admins, role:admin
+      g, cluster-admins, role:admin
+    scopes: '[groups]'
+  repo:
+    mountsatoken: true
+    volumeMounts:
+      - name: custom-tools
+        mountPath: /usr/local/bin/argocd-vault-plugin
+        subPath: argocd-vault-plugin
+    resources:
+      limits:
+        cpu: '1'
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    env:
+      - name: AVP_AUTH_TYPE
+        valueFrom:
+          secretKeyRef: 
+            key: AVP_AUTH_TYPE
+            name: argocd-vault-plugin-credentials
+      - name: AVP_TYPE
+        valueFrom:
+          secretKeyRef: 
+            key: AVP_TYPE
+            name: argocd-vault-plugin-credentials
+      - name: VAULT_ADDR
+        valueFrom:
+          secretKeyRef: 
+            key: VAULT_ADDR
+            name: argocd-vault-plugin-credentials
+      - name: VAULT_TOKEN
+        valueFrom:
+          secretKeyRef: 
+            key: VAULT_TOKEN
+            name: argocd-vault-plugin-credentials
+    volumes:
+    - name: custom-tools
+      emptyDir: {}
+    initContainers:
+    - name: download-tools
+      image: alpine:3.8
+      command: [sh, -c]
+      env:
+        - name: AVP_VERSION
+          value: "1.7.0"
+      args:
+        - >-
+          wget -O /custom-tools/argocd-vault-plugin
+          https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64 &&
+          chmod +x /custom-tools/argocd-vault-plugin && 
+          ls -la /custom-tools/
+      volumeMounts:
+        - mountPath: /custom-tools
+          name: custom-tools
+  resourceExclusions: |
+    - apiGroups:
+      - tekton.dev
+      clusters:
+      - '*'
+      kinds:
+      - TaskRun
+      - PipelineRun
+  dex:
+    openShiftOAuth: true
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  ha:
+    enabled: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  tls:
+    ca: {}
+  redis:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  controller:
+    processors: {}
+    resources:
+      limits:
+        cpu: '2'
+        memory: 2Gi
+      requests:
+        cpu: 250m
+        memory: 1Gi
+    sharding: {}
