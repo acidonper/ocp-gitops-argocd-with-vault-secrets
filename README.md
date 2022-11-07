@@ -126,6 +126,7 @@ NOTE: It is important to know that this secret is using the references to the *A
 
 Once the previous resources are created and configured properly, it is time to create an Argo CD instance. This new Argo CD instance has to be configured to include *Argo CD Vault Plugin* integration. Please follow the [link](https://argocd-vault-plugin.readthedocs.io/en/stable/) for more information about this integration.
 
+First of all, in order to allow Argo CD to access Vault information, it is required to create a specific token. Please follow the next steps to generate the required token in Vault:
 
 ```$bash
 
@@ -141,7 +142,7 @@ oc exec -it vault-0 -- /bin/sh
 
 NOTE: It is required to update the file **vault.env** in order to update the required information.
  
-Regarding the steps to deploy Argo CD in Openshift and create the respective Argo CD appplication that handles the secrets creation, once the Red Hat GitOps is installed, are included in the following procedure:
+Regarding the steps to deploy Argo CD in Openshift and create the respective Argo CD application that handles the creation of the secret, once the Red Hat GitOps is installed and the information required to access Vault is included in the respective environment variables file, are included in the following procedure:
 
 ```$bash
 oc new-project argocd
