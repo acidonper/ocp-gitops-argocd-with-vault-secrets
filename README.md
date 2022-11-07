@@ -47,24 +47,24 @@ oc create sa webapp
 
 oc exec -it vault-0 -- /bin/sh
 
-  vault kv put secret/webapp/config username="static-user" \
+  $ vault kv put secret/webapp/config username="static-user" \
     password="static-password"
 
-  vault kv get secret/webapp/config
+  $ vault kv get secret/webapp/config
 
-  vault policy write webapp - <<EOF
+  $ vault policy write webapp - <<EOF
   path "secret/data/webapp/config" {
     capabilities = ["read"]
   }
   EOF
 
-  vault write auth/kubernetes/role/webapp \
+  $ vault write auth/kubernetes/role/webapp \
     bound_service_account_names=webapp \
     bound_service_account_namespaces=vault \
     policies=webapp \
     ttl=24h
 
-  exit
+  $ exit
 
 oc apply --filename deployment-webapp.yml
 
@@ -84,24 +84,24 @@ Please follow the next steps to create an application to test this feature:
 
 oc exec -it vault-0 -- /bin/sh
 
-  vault kv put secret/issues/config username="annotation-user" \
+  $ vault kv put secret/issues/config username="annotation-user" \
     password="annotation-password"
 
-  vault kv get secret/issues/config
+  $ vault kv get secret/issues/config
 
-  vault policy write issues - <<EOF
+  $ vault policy write issues - <<EOF
     path "secret/data/issues/config" {
     capabilities = ["read"]
     }
   EOF
 
-  vault write auth/kubernetes/role/issues \
+  $ vault write auth/kubernetes/role/issues \
     bound_service_account_names=issues \
     bound_service_account_namespaces=vault \
     policies=issues \
     ttl=24h
 
-  exit
+  $ exit
 
 oc apply --filename deployment-issues.yml
 
@@ -116,13 +116,32 @@ oc exec \
 
 ## Git
 
-In order to have a GitOps model, it is required to create a public GitHub or GitLab repo with the secret.yaml file as unique content (E.g. [secret.yaml](./secret.yaml))
+In order to have a GitOps model, it is required to create a public GitHub or GitLab repo with a secret.yaml file as unique content (E.g. [secret.yaml](./secret.yaml)). 
+
+This repository will be the source of trust that contains a secret with an annotation that references a Vault secret (*avp.kubernetes.io/path: "secret/data/webapp/config"*). This reference allows ArgoCD, through the respective plugin and vault credentials, to find the required secret in Vault and create a secret in Openshift using this information.
+
+NOTE: It is important to know that this secret is using the references to the *APP 1* Vault secret created before. For this reason, it is required to deploy *APP 1* or create the respective Vault secret at least.
 
 ## ArgoCD
 
 Once the previous resources are created and configured properly, it is time to create an Argo CD instance. This new Argo CD instance has to be configured to include *Argo CD Vault Plugin* integration. Please follow the [link](https://argocd-vault-plugin.readthedocs.io/en/stable/) for more information about this integration.
 
-Regarding the steps to deploy Argo CD in Openshift, once the Red Hat GitOps is installed, are included in the following procedure:
+
+```$bash
+
+oc exec -it vault-0 -- /bin/sh
+
+  $ vault token create
+  ...
+  Key                Value
+  ---                -----
+  token              hvs.GZp6u2t007HJJboiXjDUDN0I  <------- Token to access Vault secrets information
+  ...
+```
+
+NOTE: It is required to update the file **vault.env** in order to update the required information and token.
+ 
+Regarding the steps to deploy Argo CD in Openshift and create the respective Argo CD appplication that handles the secrets creation, once the Red Hat GitOps is installed, are included in the following procedure:
 
 ```$bash
 oc new-project argocd
@@ -133,8 +152,6 @@ oc apply -f argocd.yaml
 
 oc apply -f argocd-app.yaml
 ```
-
-NOTE: It is required to update the file **vault.env** in order to update the required information.
 
 Once the Argo CD instance and the ArgoCD application are created, it will be possible to review the information included in the respective secret with the information saved in Vault:
 
