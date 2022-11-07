@@ -116,7 +116,7 @@ oc exec \
 
 ## Git
 
-In order to have a GitOps model, it is required to create a public GitHub or GitLab repo with the secret.yaml file as unique content (E.g. [secret.yaml](./secret.yaml)
+In order to have a GitOps model, it is required to create a public GitHub or GitLab repo with the secret.yaml file as unique content (E.g. [secret.yaml](./secret.yaml))
 
 ## ArgoCD
 
