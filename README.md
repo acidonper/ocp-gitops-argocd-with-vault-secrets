@@ -139,7 +139,7 @@ oc exec -it vault-0 -- /bin/sh
   ...
 ```
 
-NOTE: It is required to update the file **vault.env** in order to update the required information and token.
+NOTE: It is required to update the file **vault.env** in order to update the required information.
  
 Regarding the steps to deploy Argo CD in Openshift and create the respective Argo CD appplication that handles the secrets creation, once the Red Hat GitOps is installed, are included in the following procedure:
 
