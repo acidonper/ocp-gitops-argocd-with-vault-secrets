@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ArgoCD
 metadata:
   name: argocd
-  namespace: vault
+  namespace: argocd
 spec:
   configManagementPlugins: |
     - name: argocd-vault-plugin
