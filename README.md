@@ -18,7 +18,11 @@ Please follow the next steps, included in the [official documentation](https://d
 ```$bash
 oc login -u kubeadmin -p xxxxx https://api.my.domain.com:6443
 
+cd ~/home
+
 git clone https://github.com/hashicorp/vault-helm.git
+
+cd ~/home/vault-helm
 
 helm repo add hashicorp https://helm.releases.hashicorp.com
 
@@ -27,6 +31,8 @@ oc new-project vault
 helm install vault hashicorp/vault \
     --set "global.openshift=true" \
     --set "server.dev.enabled=true" --values values.openshift.yaml
+
+cd ~
 
 oc exec -it vault-0 -- /bin/sh
 
