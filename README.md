@@ -1,6 +1,6 @@
 # Openshift GitOps - Argo CD with Vault Secrets
 
-This repository includes a set of examples to integrate ArgoCD and Vault for creating secrets in Openshift following a secure gitops model.
+This repository includes a set of examples to integrate Argo CD and Vault for creating secrets in Openshift following a secure gitops model.
 
 ## Prerequisites
 
@@ -32,17 +32,17 @@ helm install vault hashicorp/vault \
 
 oc exec -it vault-0 -- /bin/sh
 
-  vault auth enable kubernetes
+  $ vault auth enable kubernetes
 
-  vault write auth/kubernetes/config \
-    kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443"
+  $ vault write auth/kubernetes/config \
+      kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443"
 
-  exit
+  $ exit
 ```
 
 ### APP 1
 
-Once vault is installed, it is time to deploy an application to test the Vault implementation. This use case is requesting secret information directly from Vault.
+Once Vault is installed, it is time to deploy an application to test the Vault implementation. This use case is requesting secret information directly from Vault.
 
 Please follow the next steps to create this application:
 
@@ -70,7 +70,7 @@ oc exec -it vault-0 -- /bin/sh
 
   $ exit
 
-oc apply --filename deployment-webapp.yml
+oc apply --filename deployment-webapp.yaml
 
 oc exec \
     $(oc get pod --selector='app=webapp' --output='jsonpath={.items[0].metadata.name}') \
@@ -80,11 +80,12 @@ oc exec \
 
 ### APP 2
 
-Once vault is installed, it is time to deploy a second application in order to test the Vault implementation using config files injection.
+Once Vault is installed, it is time to deploy a second application in order to test the Vault implementation using config files injection.
  
 Please follow the next steps to create an application to test this feature:
 
 ```$bash
+oc create sa issues
 
 oc exec -it vault-0 -- /bin/sh
 
@@ -107,7 +108,7 @@ oc exec -it vault-0 -- /bin/sh
 
   $ exit
 
-oc apply --filename deployment-issues.yml
+oc apply --filename deployment-issues.yaml
 
 oc logs \
     $(oc get pod -l app=issues -o jsonpath="{.items[0].metadata.name}") \
@@ -122,11 +123,13 @@ oc exec \
 
 In order to have a GitOps model, it is required to create a public GitHub or GitLab repo with a secret.yaml file as unique content (E.g. [secret.yaml](./secret.yaml)). 
 
-This repository will be the source of trust that contains a secret with an annotation that references a Vault secret (*avp.kubernetes.io/path: "secret/data/webapp/config"*). This reference allows ArgoCD, through the respective plugin and vault credentials, to find the required secret in Vault and create a secret in Openshift using this information.
+This repository will be the source of trust that contains a secret with an annotation that references a Vault secret (*avp.kubernetes.io/path: "secret/data/webapp/config"*). This reference allows Argo CD, through the respective plugin and vault credentials, to find the required secret in Vault and create a secret in Openshift using this information.
 
-NOTE: It is important to know that this secret is using the references to the *APP 1* Vault secret created before. For this reason, it is required to deploy *APP 1* or create the respective Vault secret at least.
+> **NOTE**
+> 
+> It is important to know that this secret is using the references to the *APP 1* Vault secret created before. For this reason, it is required to deploy *APP 1* or create the respective Vault secret at least.
 
-## ArgoCD
+## Argo CD
 
 Once the previous resources are created and configured properly, it is time to create an Argo CD instance. This new Argo CD instance has to be configured to include *Argo CD Vault Plugin* integration. Please follow the [link](https://argocd-vault-plugin.readthedocs.io/en/stable/) for more information about this integration.
 
@@ -142,11 +145,15 @@ oc exec -it vault-0 -- /bin/sh
   ---                -----
   token              hvs.GZp6u2t007HJJboiXjDUDN0I  <------- Token to access Vault secrets information
   ...
+
+  $ exit
 ```
 
-NOTE: It is required to update the file **vault.env** in order to update the required information.
+> **NOTE**
+> 
+> It is required to update the file **vault.env** in this repository in order to update the required information.
  
-Regarding the steps to deploy Argo CD in Openshift and create the respective Argo CD application that handles the creation of the secret, once the Red Hat GitOps is installed and the information required to access Vault is included in the respective environment variables file, are included in the following procedure:
+Regarding the steps to deploy Argo CD in Openshift and create the respective Argo CD application that handles the creation of the secret, once the Red Hat Openshift GitOps operator is installed and the information required to access Vault is included in the respective environment variables file, are included in the following procedure:
 
 ```$bash
 oc new-project argocd
@@ -158,7 +165,7 @@ oc apply -f argocd.yaml
 oc apply -f argocd-app.yaml
 ```
 
-Once the Argo CD instance and the ArgoCD application are created, it will be possible to review the information included in the respective secret with the information saved in Vault:
+Once the Argo CD instance and the Argo CD application are created, it will be possible to review the information included in the respective secret with the information saved in Vault:
 
 ```$bash
 oc project argocd
