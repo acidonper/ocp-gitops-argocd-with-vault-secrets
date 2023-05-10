@@ -24,7 +24,11 @@ oc new-project vault
 
 helm install vault hashicorp/vault \
     --set "global.openshift=true" \
-    --set "server.dev.enabled=true" --set "injector.image.repository=docker.io/hashicorp/vault-k8s" --set "injector.image.tag=latest" --set "server.image.repository=docker.io/hashicorp/vault" --set "server.image.tag=latest"
+    --set "server.dev.enabled=true" \
+    --set "injector.image.repository=docker.io/hashicorp/vault-k8s" \
+    --set "injector.image.tag=latest" \
+    --set "server.image.repository=docker.io/hashicorp/vault" \
+    --set "server.image.tag=latest"
 
 oc exec -it vault-0 -- /bin/sh
 
