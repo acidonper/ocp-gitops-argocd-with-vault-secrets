@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: secret
+  name: gitops-vault-secrets
 spec:
   destination:
     name: ''
     namespace: argocd
     server: 'https://kubernetes.default.svc'
   source:
-    path: .
-    repoURL: 'https://github.com/autstudent/vault-secret-test.git'
-    targetRevision: HEAD
+    path: demo/argocd
+    repoURL: 'https://github.com/acidonper/ocp-gitops-argocd-with-vault-secrets'
+    targetRevision: demo
     plugin:
       name: argocd-vault-plugin
   project: default
