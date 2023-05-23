@@ -14,7 +14,4 @@ spec:
     plugin:
       name: argocd-vault-plugin
   project: default
-  syncPolicy:
-    automated:
-      prune: false
-      selfHeal: false  
+  syncPolicy: {} 

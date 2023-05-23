@@ -78,6 +78,14 @@ oc get secret argocd-cluster -o jsonpath='{.data.admin\.password}' -n argocd | b
 oc get route argocd-server -n argocd
 ```
 
+- Check App Namespace in order to see the respective secret created
+
+```$bash
+oc get all -n app-vault
+
+oc get secrets -n app-vault
+```
+
 ## Author
 
 Asier Cidon @RedHat
