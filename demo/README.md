@@ -71,7 +71,7 @@ oc apply -f argocd.yaml
 oc apply -f argocd-app.yaml
 ```
 
-- Access Argo CD console
+- Access Argo CD console ans Sync Application
 
 ```$bash
 oc get secret argocd-cluster -o jsonpath='{.data.admin\.password}' -n argocd | base64 -d
