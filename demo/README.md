@@ -7,10 +7,17 @@ This demo includes the basics about setting up an Argo CD environment and using 
 - Openshift 4.12+
 - Vault 1.13+ on Kubernetes (*namespace vault*)
 - Red Hat GitOps Operator
+- SeadledSecrets
 - Helm 
 - oc CLI
 
 ## Setting Up
+
+- Show SealedSecrets solution
+
+```$bash
+oc get pods -n sealedsecrets
+```
 
 - Create Secret in Vault Server
 
@@ -22,16 +29,12 @@ oc exec -it vault-0 -- /bin/sh
   $ vault kv put secret/webapp/config username="static-user" \
     password="static-password"
 
-  $ vault kv get secret/webapp/config
-
-  $ exit
+## Visit Vault console
 ```
 
 - Create Vault Credentials for Argo CD
 
 ```$bash
-
-oc exec -it vault-0 -- /bin/sh
 
   $ vault token create
   ...
