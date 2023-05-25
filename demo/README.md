@@ -7,8 +7,7 @@ This demo includes the basics about setting up an Argo CD environment and using 
 - Openshift 4.12+
 - Vault 1.13+ on Kubernetes (*namespace vault*)
 - Red Hat GitOps Operator
-- SeadledSecrets
-- Oc CLI +4.12 - [Official Doc](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html)
+- OC CLI +4.12 - [Official Doc](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html)
 
 ## Setting Up
 
